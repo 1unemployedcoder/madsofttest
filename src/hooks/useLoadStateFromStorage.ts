@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import {setFormData, setStep} from "../store/slices/formSlice";
+import { setFormData, setStep } from "../store/slices/formSlice";
 
 const useLoadStateFromStorage = (setIsCompleted: (value: boolean) => void, setTimer: (value: number) => void ) => {
     const dispatch = useDispatch();
