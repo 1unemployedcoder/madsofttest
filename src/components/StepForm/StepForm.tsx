@@ -1,10 +1,10 @@
-import React, {useEffect, useState} from 'react';
-import {useSelector, useDispatch} from 'react-redux';
-import {RootState} from '../../store/store';
-import {nextStep, resetFormData, setFormData, setStep} from "../../store/slices/formSlice";
-import {stepsArray} from "../Steps/Steps/stepsArray";
-import {useCalculateTiming} from "../../hooks/useCalculateTiming";
-import {Button} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { RootState } from '../../store/store';
+import { nextStep, resetFormData, setFormData, setStep } from "../../store/slices/formSlice";
+import { stepsArray } from "../Steps/Steps/stepsArray";
+import { useCalculateTiming } from "../../hooks/useCalculateTiming";
+import { Button } from 'antd';
 import CompletionMessage from "./components/CompletionMessage";
 import TimerDisplay from "./components/TimerDisplay";
 import ProgressBar from "./components/ProgressBar";

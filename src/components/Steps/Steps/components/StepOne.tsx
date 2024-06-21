@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Yup from 'yup';
 import StepFormWrapper from '../../StepFormWrapper';
-import {StepProps} from "../stepsArray";
+import { StepProps } from "../stepsArray";
 
 const validationSchema = Yup.object({
     answer: Yup.string().required('Обязательное поле'),

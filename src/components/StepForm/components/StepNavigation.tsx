@@ -1,6 +1,6 @@
 import React from 'react';
 import { Steps } from 'antd';
-import {StepType} from "../../Steps/Steps/stepsArray";
+import { StepType } from "../../Steps/Steps/stepsArray";
 const { Step } = Steps;
 
 const StepNavigation: React.FC<{ steps: StepType[], currentStep: number }> = ({ steps, currentStep }) => (

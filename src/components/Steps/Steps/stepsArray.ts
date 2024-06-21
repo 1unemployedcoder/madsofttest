@@ -2,7 +2,7 @@ import StepOne from "./components/StepOne";
 import StepThree from "./components/StepThree";
 import StepTwo from "./components/StepTwo";
 import StepFour from "./components/StepFour";
-import {FC} from "react";
+import { FC } from "react";
 
 export type StepProps = {
     onNext: () => void;
