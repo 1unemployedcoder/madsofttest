@@ -1,17 +1,13 @@
 import React from 'react';
 import * as Yup from 'yup';
-import StepFormWrapper from '../StepFormWrapper';
+import StepFormWrapper from '../../StepFormWrapper';
+import {StepProps} from "../stepsArray";
 
 const validationSchema = Yup.object({
     answer: Yup.string().required('Обязательное поле'),
 });
 
-interface StepOneProps {
-    onNext: () => void;
-    onSubmit: (data: { [key: string]: any }) => void;
-}
-
-const StepOne: React.FC<StepOneProps> = ({ onNext, onSubmit }) => {
+const StepOne: React.FC<StepProps> = ({ onNext, onSubmit }) => {
     const handleSubmit = (values: { [key: string]: any }) => {
         onSubmit(values);
         onNext();

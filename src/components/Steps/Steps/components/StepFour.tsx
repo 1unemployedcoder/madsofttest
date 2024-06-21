@@ -1,17 +1,13 @@
 import React from 'react';
 import * as Yup from 'yup';
-import StepFormWrapper from '../StepFormWrapper';
+import StepFormWrapper from '../../StepFormWrapper';
+import {StepProps} from "../stepsArray";
 
 const validationSchema = Yup.object({
     answer: Yup.array().min(1, 'Обязательное поле').required('Обязательное поле'),
 });
 
-interface StepMultipleChoiceProps {
-    onNext: () => void;
-    onSubmit: (data: { [key: string]: any }) => void;
-}
-
-const StepFour: React.FC<StepMultipleChoiceProps> = ({ onNext, onSubmit }) => {
+const StepFour: React.FC<StepProps> = ({ onNext, onSubmit }) => {
     const handleSubmit = (values: { [key: string]: any }) => {
         onSubmit(values);
         onNext();

@@ -1,51 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../store/store';
-import { nextStep, setFormData, setStep } from "../store/slices/formSlice";
-import { steps } from "../steps/Steps";
-import { useCalculateTiming } from "../hooks/useCalculateTiming";
-import { Button } from 'antd';
-import CompletionMessage from "./StepForm/CompletionMessage";
-import TimerDisplay from "./StepForm/TimerDisplay";
-import ProgressBar from "./StepForm/ProgressBar";
-import StepNavigation from "./StepForm/StepNavigation";
+import React, {useEffect, useState} from 'react';
+import {useSelector, useDispatch} from 'react-redux';
+import {RootState} from '../../store/store';
+import {nextStep, resetFormData, setFormData, setStep} from "../../store/slices/formSlice";
+import {stepsArray} from "../Steps/Steps/stepsArray";
+import {useCalculateTiming} from "../../hooks/useCalculateTiming";
+import {Button} from 'antd';
+import CompletionMessage from "./components/CompletionMessage";
+import TimerDisplay from "./components/TimerDisplay";
+import ProgressBar from "./components/ProgressBar";
+import StepNavigation from "./components/StepNavigation";
 import Title from "antd/lib/typography/Title";
+import useTimer from "../../hooks/useTimer";
+import useLoadStateFromStorage from "../../hooks/useLoadStateFromStorage";
 
 const StepForm: React.FC = () => {
     const step = useSelector((state: RootState) => state.form.step);
     const dispatch = useDispatch();
-    const [timer, setTimer] = useState<number>(0);
+    const [timer, setTimer] = useTimer(1200);
     const [minutes, formattedSeconds, percent] = useCalculateTiming(timer);
+    const formData = useSelector((state: RootState) => state.form.formData);
+    const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
-    useEffect(() => {
-        const savedStep = localStorage.getItem('currentStep');
-        const savedTimer = localStorage.getItem('timer');
-        if (savedStep) {
-            dispatch(setStep(parseInt(savedStep)));
-        }
-        if (savedTimer) {
-            setTimer(parseInt(savedTimer));
-        }
-        const timerInterval = setInterval(() => {
-            setTimer((prev) => {
-                if (prev > 0) {
-                    localStorage.setItem('timer', (prev - 1).toString());
-                    return prev - 1;
-                } else {
-                    clearInterval(timerInterval);
-                    return 0;
-                }
-            });
-        }, 1000);
-        return () => clearInterval(timerInterval);
-    }, [dispatch]);
+    useLoadStateFromStorage(setIsCompleted, setTimer);
 
     useEffect(() => {
         localStorage.setItem('currentStep', step.toString());
     }, [step]);
 
+    useEffect(() => {
+        localStorage.setItem('formData', JSON.stringify(formData));
+    }, [formData]);
+
     const handleNext = () => {
         dispatch(nextStep());
+        if (step === stepsArray.length - 1) {
+            setIsCompleted(true);
+            localStorage.setItem('isCompleted', 'true');
+        }
     };
 
     const handleFormSubmit = (data: { [key: string]: any }) => {
@@ -53,29 +44,44 @@ const StepForm: React.FC = () => {
     };
 
     const handleReset = () => {
-        dispatch(setStep(0));
-        setTimer(1200);
+        localStorage.removeItem('formData');
         localStorage.removeItem('currentStep');
         localStorage.removeItem('timer');
+        localStorage.removeItem('isCompleted');
+        setIsCompleted(false);
+        dispatch(setStep(0));
+        dispatch(resetFormData())
+        setTimer(1200);
     };
 
     const renderStep = () => {
-        const CurrentStepComponent = steps[step]?.component;
+        const CurrentStepComponent = stepsArray[step]?.component;
         return CurrentStepComponent ? (
-            <CurrentStepComponent onNext={handleNext} onSubmit={handleFormSubmit} />
+            <CurrentStepComponent onNext={handleNext} onSubmit={handleFormSubmit}/>
         ) : (
-            <CompletionMessage />
+            <CompletionMessage/>
         );
     };
 
+    const renderContent = () => {
+        if (isCompleted) return <CompletionMessage />;
+        if (timer <= 0) return <Title>Вы не успели</Title>;
+        return (
+            <>
+                <TimerDisplay minutes={minutes} formattedSeconds={formattedSeconds} />
+                <ProgressBar percent={percent} timer={timer} />
+                <StepNavigation steps={stepsArray} currentStep={step} />
+                {renderStep()}
+            </>
+        );
+    };
+
+
     return (
-        <div style={{ maxWidth: '800px', margin: 'auto', padding: '20px' }}>
+        <div style={{maxWidth: '800px', margin: 'auto', padding: '20px'}}>
             <Title>Тестирование</Title>
-            <TimerDisplay minutes={minutes} formattedSeconds={formattedSeconds} />
-            <ProgressBar percent={percent} timer={timer} />
-            <StepNavigation steps={steps} currentStep={step} />
-            {renderStep()}
-            <div style={{ marginTop: '20px' }}>
+            {renderContent()}
+            <div style={{marginTop: '20px'}}>
                 <Button type="dashed" onClick={handleReset}>Пройти тест заново</Button>
             </div>
         </div>
